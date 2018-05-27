@@ -357,7 +357,7 @@ F5 inserts the entity code."
 (when (fboundp 'org-link-set-parameters)
   (org-link-set-parameters "man"
                            :follow (lambda (path) (man path))
-                           :store 'org-man-store-link))
+                           :store 'scimax-org-man-store-link))
 
 
 ;; * Ivy navigation
