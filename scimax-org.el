@@ -452,7 +452,7 @@ Use a double prefix to make it recursive and fontified."
   (let ((fontify nil))
     (when (equal recursive '(16))
       (setq fontify t))
-    (ivy-org-jump-to-heading-in-files
+    (scimax-org-ivy-heading-in-files
      (f-entries "."
                 (lambda (f)
                   (and
@@ -468,7 +468,7 @@ Use a double prefix to make it recursive and fontified."
 The project is defined by projectile. Use a prefix arg FONTIFY
 for colored headlines."
   (interactive "P")
-  (ivy-org-jump-to-heading-in-files
+  (scimax-org-ivy-heading-in-files
    (mapcar
     (lambda (f) (expand-file-name f (projectile-project-root)))
     (-filter (lambda (f)
@@ -484,7 +484,7 @@ for colored headlines."
   "Jump to a headline in an open org-file.
 Use a prefix arg FONTIFY for colored headlines."
   (interactive "P")
-  (ivy-org-jump-to-heading-in-files
+  (scimax-org-ivy-heading-in-files
    (mapcar 'buffer-file-name
            (-filter (lambda (b)
                       (-when-let (f (buffer-file-name b))
