@@ -13,7 +13,7 @@
 ;; (require 'dash)
 
 
-(defun org-teleport (&optional arg)
+(defun scimax-org-teleport (&optional arg)
   "Teleport the current heading to after a headline selected with avy.
 With a prefix ARG move the headline to before the selected
 headline. With a numeric prefix, set the headline level. If ARG
@@ -67,7 +67,7 @@ is positive, move after, and if negative, move before."
 
 
 ;; * Babel settings
-(defun scimax-align-result-table ()
+(defun scimax-org-align-result-table ()
   "Align tables in the subtree."
   (save-restriction
     (save-excursion
@@ -80,7 +80,7 @@ is positive, move after, and if negative, move before."
 
 
 ;; * Fragment overlays
-(defun org-latex-fragment-tooltip (beg end image imagetype)
+(defun scimax-org-latex-fragment-tooltip (beg end image imagetype)
   "Add the fragment tooltip to the overlay and set click function to toggle it."
   (overlay-put (ov-at) 'help-echo
                (concat (buffer-substring beg end)
@@ -91,12 +91,11 @@ is positive, move after, and if negative, move before."
                                          (interactive)
                                          (org-remove-latex-fragment-image-overlays ,beg ,end)))
                                     map)))
-
-(advice-add 'org--format-latex-make-overlay :after 'org-latex-fragment-tooltip)
+(advice-add 'org--format-latex-make-overlay :after 'scimax-org-latex-fragment-tooltip)
 
 
 ;; ** numbering latex equations
-(defun org-renumber-environment (orig-func &rest args)
+(defun scimax-org-renumber-environment (orig-func &rest args)
   "A function to inject numbers in LaTeX fragment previews."
   (let ((results '())
         (counter -1)
@@ -136,8 +135,7 @@ is positive, move after, and if negative, move before."
              (car args)))))
 
   (apply orig-func args))
-
-(advice-add 'org-create-formula-image :around #'org-renumber-environment)
+(advice-add 'org-create-formula-image :around #'scimax-org-renumber-environment)
 
 
 
@@ -215,7 +213,7 @@ is positive, move after, and if negative, move before."
 ;;                  (insert ,(concat beginning-marker end-marker))
 ;;                  (backward-char ,(length end-marker)))))))
 
-(defun org-latex-math-region-or-point (&optional arg)
+(defun scimax-org-latex-math-region-or-point (&optional arg)
   "Wrap the selected region in latex math markup.
 \(\) or $$ (with prefix ARG) or @@latex:@@ with double prefix.
 Or insert those and put point in the middle to add an equation."
@@ -237,7 +235,7 @@ Or insert those and put point in the middle to add an equation."
       (insert (concat  (car chars) (cdr chars)))
       (backward-char (length (cdr chars))))))
 
-(defun helm-insert-org-entity ()
+(defun scimax-org-helm-insert-org-entity ()
   "Helm interface to insert an entity from `org-entities'.
 F1 inserts utf-8 character
 F2 inserts entity code
@@ -297,7 +295,7 @@ F5 inserts the entity code."
            sources))))
 
 
-(defun ivy-insert-org-entity ()
+(defun scimax-org-ivy-insert-org-entity ()
   "Insert an org-entity using ivy."
   (interactive)
   (ivy-read "Entity: " (cl-loop for element in (append org-entities org-entities-user)
@@ -326,7 +324,7 @@ F5 inserts the entity code."
                              (insert (cl-sixth (cdr candidate))) "Latin-1")))))
 
 
-(defun org-man-store-link ()
+(defun scimax-org-man-store-link ()
   "Store a link to a man page."
   (when (memq major-mode '(Man-mode woman-mode))
     (let* ((page (save-excursion
@@ -343,14 +341,14 @@ F5 inserts the entity code."
 
 
 ;; * ivy navigation
-(defun ivy-org-jump-to-visible-headline ()
+(defun scimax-org-avy-jump-to-visible-headline ()
   "Jump to visible headline in the buffer."
   (interactive)
   (org-mark-ring-push)
   (avy-with avy-goto-line (avy--generic-jump "^\\*+" nil avy-style)))
 
 
-(defun ivy-jump-to-visible-sentence ()
+(defun scimax-org-avy-jump-to-visible-sentence ()
   "Jump to visible sentence in the buffer."
   (interactive)
   (org-mark-ring-push)
@@ -358,7 +356,7 @@ F5 inserts the entity code."
   (forward-sentence))
 
 
-(defun ivy-org-jump-to-heading ()
+(defun scimax-org-ivy-org-heading ()
   "Jump to heading in the current buffer."
   (interactive)
   (let ((headlines '()))
@@ -380,7 +378,7 @@ F5 inserts the entity code."
                         (outline-show-entry)))))
 
 
-(defun ivy-org-jump-to-agenda-heading ()
+(defun scimax-org-ivy-agenda-heading ()
   "Jump to a heading in an agenda file."
   (interactive)
   (let ((headlines '()))
@@ -406,7 +404,7 @@ F5 inserts the entity code."
                         (outline-show-entry)))))
 
 
-(defun ivy-org-jump-to-heading-in-files (files &optional fontify)
+(defun scimax-org-ivy-heading-in-files (files &optional fontify)
   "Jump to org heading in FILES.
 Optional FONTIFY colors the headlines. It might slow things down
 a lot with large numbers of org-files or long org-files. This
@@ -436,7 +434,7 @@ function does not open the files."
                         (outline-show-entry)))))
 
 
-(defun ivy-org-jump-to-heading-in-directory (&optional recursive)
+(defun scimax-org-ivy-heading-in-directory (&optional recursive)
   "Jump to heading in an org file in the current directory.
 Use a prefix arg to make it RECURSIVE.
 Use a double prefix to make it recursive and fontified."
@@ -454,7 +452,7 @@ Use a double prefix to make it recursive and fontified."
      fontify)))
 
 
-(defun ivy-org-jump-to-project-headline (&optional fontify)
+(defun scimax-org-ivy-project-headline (&optional fontify)
   "Jump to a headline in an org-file in the current project.
 The project is defined by projectile. Use a prefix arg FONTIFY
 for colored headlines."
@@ -470,7 +468,7 @@ for colored headlines."
    fontify))
 
 
-(defun ivy-org-jump-to-open-headline (&optional fontify)
+(defun scimax-org-ivy-open-headline (&optional fontify)
   "Jump to a headline in an open org-file.
 Use a prefix arg FONTIFY for colored headlines."
   (interactive "P")
@@ -485,7 +483,7 @@ Use a prefix arg FONTIFY for colored headlines."
 
 
 ;;* org-numbered headings
-(defun scimax-overlay-numbered-headings ()
+(defun scimax-org-overlay-numbered-headings ()
   "Put numbered overlays on the headings."
   (interactive)
   (loop for (p lv) in (let ((counters (copy-list '(0 0 0 0 0 0 0 0 0 0)))
@@ -530,7 +528,7 @@ Use a prefix arg FONTIFY for colored headlines."
   (cl-labels ((fl-noh (limit) (save-restriction
                                 (widen)
                                 (ov-clear 'numbered-heading)
-                                (scimax-overlay-numbered-headings))))
+                                (scimax-org-overlay-numbered-headings))))
 
     (if scimax-numbered-org-mode
         (progn
