@@ -4,7 +4,7 @@
 
 
 ;;; Code:
-;; (require 'org)
+(require 'org)
 ;; (require 'ox-latex)
 ;; (require 'org-inlinetask)
 ;; (require 'org-mouse)
@@ -324,6 +324,7 @@ F5 inserts the entity code."
                              (insert (cl-sixth (cdr candidate))) "Latin-1")))))
 
 
+;; * Define man link
 (defun scimax-org-man-store-link ()
   "Store a link to a man page."
   (when (memq major-mode '(Man-mode woman-mode))
@@ -338,9 +339,14 @@ F5 inserts the entity code."
        :link link
        :description description))))
 
+(when (fboundp 'org-link-set-parameters)
+  (org-link-set-parameters "man"
+                           :follow (lambda (path) (man path))
+                           :store 'org-man-store-link))
 
 
-;; * ivy navigation
+;; * Ivy navigation
+;;;###autoload
 (defun scimax-org-avy-jump-to-visible-headline ()
   "Jump to visible headline in the buffer."
   (interactive)
@@ -348,6 +354,7 @@ F5 inserts the entity code."
   (avy-with avy-goto-line (avy--generic-jump "^\\*+" nil avy-style)))
 
 
+;;;###autoload
 (defun scimax-org-avy-jump-to-visible-sentence ()
   "Jump to visible sentence in the buffer."
   (interactive)
@@ -356,6 +363,7 @@ F5 inserts the entity code."
   (forward-sentence))
 
 
+;;;###autoload
 (defun scimax-org-ivy-org-heading ()
   "Jump to heading in the current buffer."
   (interactive)
@@ -378,6 +386,7 @@ F5 inserts the entity code."
                         (outline-show-entry)))))
 
 
+;;;###autoload
 (defun scimax-org-ivy-agenda-heading ()
   "Jump to a heading in an agenda file."
   (interactive)
@@ -434,6 +443,7 @@ function does not open the files."
                         (outline-show-entry)))))
 
 
+;;;###autoload
 (defun scimax-org-ivy-heading-in-directory (&optional recursive)
   "Jump to heading in an org file in the current directory.
 Use a prefix arg to make it RECURSIVE.
@@ -452,6 +462,7 @@ Use a double prefix to make it recursive and fontified."
      fontify)))
 
 
+;;;###autoload
 (defun scimax-org-ivy-project-headline (&optional fontify)
   "Jump to a headline in an org-file in the current project.
 The project is defined by projectile. Use a prefix arg FONTIFY
@@ -468,6 +479,7 @@ for colored headlines."
    fontify))
 
 
+;;;###autoload
 (defun scimax-org-ivy-open-headline (&optional fontify)
   "Jump to a headline in an open org-file.
 Use a prefix arg FONTIFY for colored headlines."
