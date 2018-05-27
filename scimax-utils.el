@@ -5,6 +5,8 @@
 
 ;;; Code:
 
+(require 's)
+(require 'avy)
 (require 'emacs-keybinding-command-tooltip-mode)
 
 ;; * Hotspots
@@ -21,6 +23,7 @@ These are shortcut to commands.
 
 These are like bookmarks."
   :group 'scimax)
+
 
 ;;;###autoload
 (defun hotspots (arg)
@@ -75,8 +78,8 @@ recent files and bookmarks. You can set a bookmark also."
 
 
 ;;;###autoload
-(defun bash ()
-  "Open a bash window."
+(defun terminal ()
+  "Open a terminal window."
   (interactive)
   (cond
    ((string= system-type "darwin")
@@ -95,6 +98,7 @@ recent files and bookmarks. You can set a bookmark also."
 
 
 
+;;;###autoload
 (add-to-list 'safe-local-eval-forms
              '(progn (require 'emacs-keybinding-command-tooltip-mode)
                      (emacs-keybinding-command-tooltip-mode +1)))
@@ -121,6 +125,7 @@ recent files and bookmarks. You can set a bookmark also."
 
 
 ;; case on regions
+;;;###autoload
 (defun sentence-case-region (r1 r2)
   "Capitalize the word at point, and the first word of each
 sentence in the region."
@@ -133,6 +138,7 @@ sentence in the region."
       (capitalize-word 1))))
 
 
+;;;###autoload
 (defun avy-jump-to-sentence ()
   "Jump to a sentence with avy."
   (interactive)
@@ -152,6 +158,7 @@ sentence in the region."
      (avy--style-fn avy-style))))
 
 
+;;;###autoload
 (defun avy-jump-to-paragraph ()
   "Jump to a paragraph with avy."
   (interactive)
