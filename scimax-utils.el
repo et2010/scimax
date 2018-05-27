@@ -5,6 +5,8 @@
 
 ;;; Code:
 
+(require 'emacs-keybinding-command-tooltip-mode)
+
 ;; * Hotspots
 (defcustom scimax-user-hotspot-commands '()
   "A-list of hotspots to jump to in `hotspots'.
@@ -12,13 +14,13 @@ These are shortcut to commands.
 \(\"label\" . command)"
   :group 'scimax)
 
+
 (defcustom scimax-user-hotspot-locations '()
   "A-list of hotspot locations to jump to in  `hotspots'.
 \(\"label\" . \"Path to file\").
 
 These are like bookmarks."
   :group 'scimax)
-
 
 ;;;###autoload
 (defun hotspots (arg)
@@ -29,75 +31,19 @@ locations (`scimax-user-hotspot-locations'), org agenda files,
 recent files and bookmarks. You can set a bookmark also."
   (interactive "P")
   (helm :sources `(((name . "Commands")
-		    (candidates . ,scimax-user-hotspot-commands)
-		    (action . (("Open" . (lambda (x) (funcall x))))))
-		   ((name . "My Locations")
-		    (candidates . ,scimax-user-hotspot-locations)
-		    (action . (("Open" . (lambda (x) (find-file x))))))
-		   ((name . "My org files")
-		    (candidates . ,org-agenda-files)
-		    (action . (("Open" . (lambda (x) (find-file x))))))
-		   helm-source-recentf
-		   helm-source-bookmarks
-		   helm-source-bookmark-set)))
+                    (candidates . ,scimax-user-hotspot-commands)
+                    (action . (("Open" . (lambda (x) (funcall x))))))
+                   ((name . "My Locations")
+                    (candidates . ,scimax-user-hotspot-locations)
+                    (action . (("Open" . (lambda (x) (find-file x))))))
+                   ((name . "My org files")
+                    (candidates . ,org-agenda-files)
+                    (action . (("Open" . (lambda (x) (find-file x))))))
+                   helm-source-recentf
+                   helm-source-bookmarks
+                   helm-source-bookmark-set)))
 
 
-(add-to-list 'safe-local-eval-forms
-	     '(progn (require 'emacs-keybinding-command-tooltip-mode) (emacs-keybinding-command-tooltip-mode +1)))
-
-;;;###autoload
-(defun scimax-help ()
-  "Open the ‘scimax’ manual in org-mode."
-  (interactive)
-  (find-file (expand-file-name
-              "scimax.org"
-	      scimax-dir)))
-
-
-;;;###autoload
-(defun scimax-info ()
-  "Open the info manual."
-  (info "(scimax)")
-  (require 'emacs-keybinding-command-tooltip-mode)
-  (emacs-keybinding-command-tooltip-mode +1))
-
-
-
-;; * utilities
-;;;###autoload
-(defun kill-all-buffers ()
-  "Kill all buffers.  Leave one frame open."
-  (interactive)
-  (mapc 'kill-buffer (buffer-list))
-  (delete-other-windows))
-
-
-;;;###autoload
-(defun kill-other-buffers ()
-  "Kill all other buffers but this one.  Leave one frame open."
-  (interactive)
-  (mapc 'kill-buffer
-	(delq (current-buffer) (buffer-list)))
-  (delete-other-windows))
-
-
-;;;###autoload
-(defun unfill-paragraph ()
-  "Unfill paragraph at or after point."
-  (interactive "*")
-  (let ((fill-column most-positive-fixnum))
-    (fill-paragraph nil (region-active-p))))
-
-;; * Version control
-;; Some new bindings to add to vc-prefix-map
-(define-key 'vc-prefix-map "t" 'magit-status)
-
-
-(define-key 'vc-prefix-map "p" (lambda () (interactive) (vc-git-push nil)))
-(define-key 'vc-prefix-map "P" (lambda () (interactive) (vc-git-pull nil)))
-
-
-;; * Windows
 ;;;###autoload
 (defun explorer ()
   "Open Finder or Windows Explorer in the current directory."
@@ -107,20 +53,21 @@ recent files and bookmarks. You can set a bookmark also."
     (shell-command "nautilus"))
    ((string= system-type "darwin")
     (shell-command (format "open -b com.apple.finder %s"
-			   (if (buffer-file-name)
-			       (file-name-directory (buffer-file-name))
-			     "~/"))))
+                           (if (buffer-file-name)
+                               (file-name-directory (buffer-file-name))
+                             "~/"))))
    ((string= system-type "windows-nt")
     (shell-command (format "explorer %s"
-			   (replace-regexp-in-string
-			    "/" "\\\\"
-			    (if (buffer-file-name)
-				(file-name-directory (buffer-file-name))
-			      (expand-file-name  "~/"))))))))
+                           (replace-regexp-in-string
+                            "/" "\\\\"
+                            (if (buffer-file-name)
+                                (file-name-directory (buffer-file-name))
+                              (expand-file-name  "~/"))))))))
 
 (defalias 'finder 'explorer "Alias for `explorer'.")
 
 
+;;;###autoload
 (defun bash ()
   "Open a bash window."
   (interactive)
@@ -130,12 +77,38 @@ recent files and bookmarks. You can set a bookmark also."
    ((string= system-type "darwin")
     (shell-command
      (format "open -b com.apple.terminal \"%s\""
-	     (if (buffer-file-name)
-		 (file-name-directory (buffer-file-name))
-	       (expand-file-name default-directory)))))
+             (if (buffer-file-name)
+                 (file-name-directory (buffer-file-name))
+               (expand-file-name default-directory)))))
    ((string= system-type "windows-nt")
     (shell-command "start \"\" \"%SYSTEMDRIVE%\\Program Files\\Git\\bin\\bash.exe\" --login &"))))
 
+
+
+
+(add-to-list 'safe-local-eval-forms
+             '(progn (require 'emacs-keybinding-command-tooltip-mode)
+                     (emacs-keybinding-command-tooltip-mode +1)))
+
+
+;;;###autoload
+(defun scimax-help ()
+  "Open the ‘scimax’ manual in org-mode."
+  (interactive)
+  (find-file (expand-file-name
+              "scimax.org"
+              scimax-dir)))
+
+
+;;;###autoload
+(defun scimax-info ()
+  "Open the info manual."
+  (info "(scimax)")
+  (emacs-keybinding-command-tooltip-mode +1))
+
+
+
+;; (global-set-key (kbd "M-<backspace>") 'backward-kill-sentence)
 
 
 ;; case on regions
@@ -151,26 +124,24 @@ sentence in the region."
       (capitalize-word 1))))
 
 
-(global-set-key (kbd "M-<backspace>") 'backward-kill-sentence)
-
-
 (defun avy-jump-to-sentence ()
   "Jump to a sentence with avy."
   (interactive)
   (avy-with my-jumper
     (avy--process
      (let (p
-	   (e (window-end)))
+           (e (window-end)))
        (save-excursion
-	 (goto-char (window-start))
-	 (push (point) p)
-	 (while (< (point) e)
-	   (forward-sentence)
-	   (save-excursion
-	     (backward-sentence)
-	     (push (point) p)))
-	 (reverse p)))
+         (goto-char (window-start))
+         (push (point) p)
+         (while (< (point) e)
+           (forward-sentence)
+           (save-excursion
+             (backward-sentence)
+             (push (point) p)))
+         (reverse p)))
      (avy--style-fn avy-style))))
+
 
 (defun avy-jump-to-paragraph ()
   "Jump to a paragraph with avy."
@@ -178,42 +149,30 @@ sentence in the region."
   (avy-with my-jumper
     (avy--process
      (let (p
-	   (e (window-end)))
+           (e (window-end)))
        (save-excursion
-	 (goto-char (window-start))
-	 (push (point) p)
-	 (while (< (point) e)
-	   (forward-paragraph)
-	   (push (point) p))
-	 (reverse p)))
+         (goto-char (window-start))
+         (push (point) p)
+         (while (< (point) e)
+           (forward-paragraph)
+           (push (point) p))
+         (reverse p)))
      (avy--style-fn avy-style))))
 
 
-;; * profile me
-(unless (memq system-type '(windows-nt ms-dos))
-
-  (require 'esup)
-
-  (defun scimax-profile ()
-    "Run `esup' on the scimax init file to profile it."
-    (esup (expand-file-name "init.el" scimax-dir))))
-
-
-
+
 (defmacro with-no-new-buffers (&rest body)
   "Run BODY, and kill any new buffers created.
 Returns whatever BODY would return."
   (let ((current-buffers (buffer-list)))
     `(prog1
-	 (progn
-	   ,@body)
+         (progn
+           ,@body)
        (mapc (lambda (buf)
-	       (unless (-contains? ',current-buffers buf)
-		 (kill-buffer buf)))
-	     (buffer-list)))))
+               (unless (-contains? ',current-buffers buf)
+                 (kill-buffer buf)))
+             (buffer-list)))))
 
-
-;; * f-strings
 
 (defmacro f-string (fmt)
   "Like `s-format' but with format fields in it.
@@ -229,16 +188,14 @@ enjoy using a lot.
 "
   (let* ((matches (s-match-strings-all"${\\(?3:\\(?1:[^} ]+\\) *\\(?2:[^}]*\\)\\)}" fmt))
          (agetter (cl-loop for (m0 m1 m2 m3) in matches
-			   collect `(cons ,m3  (format (format "%%%s" (if (string= ,m2 "")
-									  (if s-lex-value-as-lisp "S" "s")
-									,m2))
-						       (symbol-value (intern ,m1)))))))
+                           collect `(cons ,m3  (format (format "%%%s" (if (string= ,m2 "")
+                                                                          (if s-lex-value-as-lisp "S" "s")
+                                                                        ,m2))
+                                                       (symbol-value (intern ,m1)))))))
 
     `(s-format ,fmt 'aget (list ,@agetter))))
 
 
-
-;; * The end
 (provide 'scimax-utils)
 
 ;;; scimax-utils.el ends here
