@@ -28,6 +28,7 @@
 (require 'avy)
 
 
+;;;###autoload
 (defun scimax-org-teleport (&optional arg)
   "Teleport the current heading to after a headline selected with avy.
 With a prefix ARG move the headline to before the selected
@@ -92,6 +93,7 @@ is positive, move after, and if negative, move before."
           (goto-char (org-element-property :post-affiliated tbl))
           (org-table-align))))))
 
+(add-hook 'org-babel-after-execute-hook 'scimax-align-result-table)
 
 
 ;; * Fragment overlays
@@ -228,6 +230,7 @@ is positive, move after, and if negative, move before."
 ;;                  (insert ,(concat beginning-marker end-marker))
 ;;                  (backward-char ,(length end-marker)))))))
 
+;;;###autoload
 (defun scimax-org-latex-math-region-or-point (&optional arg)
   "Wrap the selected region in latex math markup.
 \(\) or $$ (with prefix ARG) or @@latex:@@ with double prefix.
@@ -250,6 +253,7 @@ Or insert those and put point in the middle to add an equation."
       (insert (concat  (car chars) (cdr chars)))
       (backward-char (length (cdr chars))))))
 
+;;;###autoload
 (defun scimax-org-helm-insert-org-entity ()
   "Helm interface to insert an entity from `org-entities'.
 F1 inserts utf-8 character
@@ -310,6 +314,7 @@ F5 inserts the entity code."
            sources))))
 
 
+;;;###autoload
 (defun scimax-org-ivy-insert-org-entity ()
   "Insert an org-entity using ivy."
   (interactive)
@@ -340,6 +345,7 @@ F5 inserts the entity code."
 
 
 ;; * Define man link
+;;;###autoload
 (defun scimax-org-man-store-link ()
   "Store a link to a man page."
   (when (memq major-mode '(Man-mode woman-mode))
@@ -354,6 +360,7 @@ F5 inserts the entity code."
        :link link
        :description description))))
 
+;;;###autoload
 (when (fboundp 'org-link-set-parameters)
   (org-link-set-parameters "man"
                            :follow (lambda (path) (man path))
