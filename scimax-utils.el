@@ -49,8 +49,6 @@ recent files and bookmarks. You can set a bookmark also."
   "Open Finder or Windows Explorer in the current directory."
   (interactive)
   (cond
-   ((string= system-type "gnu/linux")
-    (shell-command "nautilus"))
    ((string= system-type "darwin")
     (shell-command (format "open -b com.apple.finder %s"
                            (if (buffer-file-name)
@@ -62,7 +60,16 @@ recent files and bookmarks. You can set a bookmark also."
                             "/" "\\\\"
                             (if (buffer-file-name)
                                 (file-name-directory (buffer-file-name))
-                              (expand-file-name  "~/"))))))))
+                              (expand-file-name  "~/"))))))
+   ((string= system-type "gnu/linux")
+    (let ((process-connection-type nil)
+          (openFileProgram (if (file-exists-p "/usr/bin/gvfs-open")
+                               "/usr/bin/gvfs-open"
+                             "/usr/bin/xdg-open")))
+      (start-process "" nil openFileProgram "."))
+    ;; (shell-command "xdg-open .") ;; 2013-02-10 this sometimes froze emacs till the folder is closed. For example: with nautilus
+    )))
+
 
 (defalias 'finder 'explorer "Alias for `explorer'.")
 
@@ -72,8 +79,6 @@ recent files and bookmarks. You can set a bookmark also."
   "Open a bash window."
   (interactive)
   (cond
-   ((string= system-type "gnu/linux")
-    (shell-command "gnome-terminal"))
    ((string= system-type "darwin")
     (shell-command
      (format "open -b com.apple.terminal \"%s\""
@@ -81,7 +86,11 @@ recent files and bookmarks. You can set a bookmark also."
                  (file-name-directory (buffer-file-name))
                (expand-file-name default-directory)))))
    ((string= system-type "windows-nt")
-    (shell-command "start \"\" \"%SYSTEMDRIVE%\\Program Files\\Git\\bin\\bash.exe\" --login &"))))
+    (shell-command "start \"\" \"%SYSTEMDRIVE%\\Program Files\\Git\\bin\\bash.exe\" --login &"))
+   ((string= system-type "gnu/linux")
+    (let ((process-connection-type nil))
+      (start-process "" nil "xfce4-terminal"
+                     (concat "--working-directory=" default-directory) )))))
 
 
 
