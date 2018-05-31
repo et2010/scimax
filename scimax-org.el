@@ -24,6 +24,7 @@
 ;;; Commentary:
 
 ;;; Code:
+(require 'f)
 (require 'org)
 (require 'avy)
 

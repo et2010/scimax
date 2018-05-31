@@ -7,7 +7,10 @@
 
 (require 's)
 (require 'avy)
-(require 'emacs-keybinding-command-tooltip-mode)
+(require 'helm)
+(require 'helm-for-files)
+(require 'org-agenda)
+;; (require 'emacs-keybinding-command-tooltip-mode)
 
 ;; * Hotspots
 (defcustom scimax-user-hotspot-commands '()
@@ -78,8 +81,8 @@ recent files and bookmarks. You can set a bookmark also."
 
 
 ;;;###autoload
-(defun terminal ()
-  "Open a terminal window."
+(defun bash ()
+  "Open a bash window."
   (interactive)
   (cond
    ((string= system-type "darwin")
@@ -98,10 +101,10 @@ recent files and bookmarks. You can set a bookmark also."
 
 
 
-;;;###autoload
-(add-to-list 'safe-local-eval-forms
-             '(progn (require 'emacs-keybinding-command-tooltip-mode)
-                     (emacs-keybinding-command-tooltip-mode +1)))
+;; ;;;###autoload
+;; (add-to-list 'safe-local-eval-forms
+;;              '(progn (require 'emacs-keybinding-command-tooltip-mode)
+;;                      (emacs-keybinding-command-tooltip-mode +1)))
 
 
 ;;;###autoload
