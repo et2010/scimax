@@ -94,7 +94,7 @@ is positive, move after, and if negative, move before."
           (goto-char (org-element-property :post-affiliated tbl))
           (org-table-align))))))
 
-(add-hook 'org-babel-after-execute-hook 'scimax-align-result-table)
+(add-hook 'org-babel-after-execute-hook 'scimax-org-align-result-table)
 
 
 ;; * Fragment overlays
