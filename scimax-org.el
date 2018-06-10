@@ -385,6 +385,8 @@ F5 inserts the entity code."
   (avy-with avy-goto-line (avy--generic-jump (sentence-end) nil avy-style))
   (forward-sentence))
 
+(defun ivy--regex-pinyin (str)
+  (ivy--regex (pinyinlib-build-regexp-string str)))
 
 ;;;###autoload
 (defun scimax-org-ivy-org-heading ()
@@ -406,7 +408,8 @@ F5 inserts the entity code."
               :action (lambda (candidate)
                         (org-mark-ring-push)
                         (goto-char (cdr (assoc 'position candidate)))
-                        (outline-show-entry)))))
+                        (outline-show-entry))
+              :re-builder #'ivy--regex-pinyin)))
 
 
 ;;;###autoload
