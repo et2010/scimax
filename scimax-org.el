@@ -6,7 +6,7 @@
 ;; URL:
 ;; Keywords: org
 ;; Version: 0.0.1
-;; Package-Requires: ((emacs "24.4") (avy "0.4.0"))
+;; Package-Requires: ((emacs "24.4") (avy "0.4.0") (ov "1.0.6"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -24,9 +24,10 @@
 ;;; Commentary:
 
 ;;; Code:
+(require 'avy)
 (require 'f)
 (require 'org)
-(require 'avy)
+(require 'ov)
 
 
 ;;;###autoload
