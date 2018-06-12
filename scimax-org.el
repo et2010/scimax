@@ -398,7 +398,7 @@ F5 inserts the entity code."
       (goto-char (point-min))
       (while (re-search-forward
               ;; this matches org headings in elisp too.
-              "^\\(;; \\)?\\(\\*+\\)\\(?: +\\(.*?\\)\\)?[ 	]*$"  nil t)
+              "^\\(;; \\|# \\)?\\(\\*+\\)\\(?: +\\(.*?\\)\\)?[ 	]*$"  nil t)
         (cl-pushnew (list
                      (format "%-80s"
                              (match-string 0))
