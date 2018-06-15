@@ -6,7 +6,7 @@
 
 ;;; Code:
 
-(require 'emacs-keybinding-command-tooltip-mode)
+;; (require 'emacs-keybinding-command-tooltip-mode)
 
 (defvar ore-user-directory "~/.emacs.d/ore/"
   "Directory to store user additions to the notes.")
@@ -19,11 +19,11 @@ Notes are returned as plain text, and will be rendered in `help-mode'."
     (concat
      "User documentation:\n"
      (if (file-exists-p fname)
-	 (with-temp-buffer
+         (with-temp-buffer
            (insert "\n")
-	   (insert-file-contents fname)
-	   (indent-rigidly (point-min) (point-max) 5)
-	   (buffer-string))
+           (insert-file-contents fname)
+           (indent-rigidly (point-min) (point-max) 5)
+           (buffer-string))
        "None defined.")
      (format  "\n\nEdit [[file:%s]]" fname))))
 
@@ -44,9 +44,9 @@ toggle LaTeX images on it.
 (defun ore-link (element)
   "`ore' documentation for org links."
   (let* ((link (org-element-context))
-	 (type (org-element-property :type link)) 
-	 (follow-func (org-link-get-parameter type :follow))
-	 (export-func (org-link-get-parameter type :export)))
+         (type (org-element-property :type link))
+         (follow-func (org-link-get-parameter type :follow))
+         (export-func (org-link-get-parameter type :export)))
     (concat
      (format
       (substitute-command-keys "You are on a %s link.
@@ -71,8 +71,8 @@ See Info node `(org) Hyperlinks'.
       type
       (org-element-property :path link)
       (format "Whole link: %s" (buffer-substring
-				(org-element-property :begin link)
-				(org-element-property :end link)))
+                                (org-element-property :begin link)
+                                (org-element-property :end link)))
       (pp-to-string follow-func)
       (pp-to-string export-func)
       (format  "\nClick for details on the face [[face:%s]]\n" (face-at-point))
@@ -83,10 +83,10 @@ See Info node `(org) Hyperlinks'.
   "Return whether point is in a src-block header."
   (and (eq 'src-block (car element))
        (save-excursion
-	 (let ((cp (point))
-	       (lp (line-number-at-pos)))
-	   (goto-char (org-element-property :begin element))
-	   (= lp (line-number-at-pos))))))
+         (let ((cp (point))
+               (lp (line-number-at-pos)))
+           (goto-char (org-element-property :begin element))
+           (= lp (line-number-at-pos))))))
 
 
 (defun ore-src-block-header (element)
@@ -303,100 +303,101 @@ Perhaps Info node `(org) Tables'?
   (with-help-window
       (help-buffer)
     (let* ((oeap (org-element-context))
-	   (ore-func (intern (format "ore-%s" (car oeap))))
-	   (s (if (fboundp ore-func)
-		  (funcall ore-func oeap)
-		(format
-		 "No documentation found for %s.
+           (ore-func (intern (format "ore-%s" (car oeap))))
+           (s (if (fboundp ore-func)
+                  (funcall ore-func oeap)
+                (format
+                 "No documentation found for %s.
 
 %s"
-		 (car oeap)
-		 (ore-user-documentation (car oeap))))))
+                 (car oeap)
+                 (ore-user-documentation (car oeap))))))
       ;; There are some special cases.
       (cond
        ((and  (eq 'src-block (car oeap))
-	      (ore-src-block-header-p oeap))
-	(setq s (ore-src-block-header oeap)))
+              (ore-src-block-header-p oeap))
+        (setq s (ore-src-block-header oeap)))
 
        ((or (eq 'table (car oeap))
-	    (eq 'table-row (car oeap))
-	    (eq 'table-cell (car oeap)))
-	(setq s (ore-table oeap)))
+            (eq 'table-row (car oeap))
+            (eq 'table-cell (car oeap)))
+        (setq s (ore-table oeap)))
 
        ((or (eq 'latex-fragment (car oeap))
-	    (eq 'latex-environment (car oeap)))
-	(setq s (ore-latex oeap))))
+            (eq 'latex-environment (car oeap)))
+        (setq s (ore-latex oeap))))
 
       (princ s)
       (princ "\n\nHere is how org-mode sees the element.\n\n")
       (pp oeap)
-      (emacs-keybinding-command-tooltip-mode))))
+      ;; (emacs-keybinding-command-tooltip-mode)
+      )))
 
 
 (defun match-next-ore-file (&optional limit)
   "Font-lock function to make file links clickable in help-mode."
   (when  (re-search-forward "\\[\\[file:\\([^]]*\\)\\]\\]" limit t)
     (let* ((fname (expand-file-name
-		   (match-string 1)
-		   ore-user-directory))
-	   (beg (match-beginning 0))
-	   (end (match-end 0))
-	   (find-func `(lambda ()
-			 (interactive)
-			 (find-file ,fname))))
+                   (match-string 1)
+                   ore-user-directory))
+           (beg (match-beginning 0))
+           (end (match-end 0))
+           (find-func `(lambda ()
+                         (interactive)
+                         (find-file ,fname))))
 
       (add-text-properties
        beg
        end
        `(mouse-face
-	 highlight
+         highlight
          display "User documentation"
-	 local-map ,(let ((map (copy-keymap help-mode-map)))
-		      (define-key map [mouse-1] find-func)
-		      map)
-	 help-echo (format
-		    "Click to edit User documentation.\n%s"
-		    fname))))))
+         local-map ,(let ((map (copy-keymap help-mode-map)))
+                      (define-key map [mouse-1] find-func)
+                      map)
+         help-echo (format
+                    "Click to edit User documentation.\n%s"
+                    fname))))))
 
 (defun match-next-ore-face (&optional limit)
   "Font-lock function to make face links clickable in help-mode."
   (when  (re-search-forward "\\[\\[face:\\([^]]*\\)\\]\\]" limit t)
     (let* ((face (match-string 1))
-	   (beg (match-beginning 0))
-	   (end (match-end 0))
-	   (func `(lambda ()
-		    (interactive)
-		    (describe-face ,face))))
+           (beg (match-beginning 0))
+           (end (match-end 0))
+           (func `(lambda ()
+                    (interactive)
+                    (describe-face ,face))))
 
       (add-text-properties
        beg
        end
        `(mouse-face
-	 highlight
-	 local-map ,(let ((map (copy-keymap help-mode-map)))
-		      (define-key map [mouse-1] func)
-		      map)
-	 display ,face
-	 help-echo (format
-		    "Click to show face information.\n%s"
-		    face))))))
+         highlight
+         local-map ,(let ((map (copy-keymap help-mode-map)))
+                      (define-key map [mouse-1] func)
+                      map)
+         display ,face
+         help-echo (format
+                    "Click to show face information.\n%s"
+                    face))))))
 
 (add-hook 'help-mode-hook
-	  (lambda ()
-	    (font-lock-add-keywords
-	     nil
-	     '((match-next-ore-file . font-lock-keyword-face)
-	       (match-next-ore-face . font-lock-keyword-face)))))
+          (lambda ()
+            (font-lock-add-keywords
+             nil
+             '((match-next-ore-file . font-lock-keyword-face)
+               (match-next-ore-face . font-lock-keyword-face)))))
 
 
 ;; Let's add to the org menu for "Help at point"
 (add-hook 'org-mode-hook
-	  (lambda ()
-	    (easy-menu-change
-	     '("Org")
-	     "Help"
-	     '(["Help at point" ore])
-	     "Show/Hide")))
+	        (lambda ()
+	          (easy-menu-change
+	           '("Org")
+	           "Help"
+	           '(["Help at point" ore])
+	           "Show/Hide")))
 
 (provide 'ore)
 
